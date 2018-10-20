@@ -2050,9 +2050,8 @@ static size_t display_allocated_blocks(const ListNode * const check_point) {
     assert_non_null(check_point->next);
 
     for (node = check_point->next; node != head; node = node->next) {
-        const MallocBlockInfo block_info = {
-            .ptr = discard_const(node->value),
-        };
+        MallocBlockInfo block_info = {0};
+            block_info.ptr = discard_const(node->value);
         assert_non_null(block_info.ptr);
 
         if (allocated_blocks == 0) {
@@ -2078,9 +2077,8 @@ static void free_allocated_blocks(const ListNode * const check_point) {
     assert_non_null(node);
 
     while (node != head) {
-        const MallocBlockInfo block_info = {
-            .ptr = discard_const(node->value),
-        };
+        MallocBlockInfo block_info = {0};
+        block_info.ptr = discard_const(node->value);
         node = node->next;
         free(discard_const_p(char, block_info.data) +
              sizeof(struct MallocBlockInfoData) +
@@ -2885,6 +2883,7 @@ int _cmocka_run_group_tests(const char *group_name,
     double total_runtime = 0;
     size_t i;
     int rc;
+    struct CMUnitTestState tmp;
 
     /* Make sure LargestIntegralType is at least the size of a pointer. */
     assert_true(sizeof(LargestIntegralType) >= sizeof(void*));
@@ -2908,11 +2907,10 @@ int _cmocka_run_group_tests(const char *group_name,
                     continue;
                 }
             }
-            cm_tests[total_tests] = (struct CMUnitTestState) {
-                .test = &tests[i],
-                .status = CM_TEST_NOT_STARTED,
-                .state = NULL,
-            };
+            tmp.test = &tests[i];
+            tmp.status = CM_TEST_NOT_STARTED;
+            tmp.state = NULL;
+            cm_tests[total_tests] = tmp;
             total_tests++;
         }
     }
@@ -3294,9 +3292,8 @@ int _run_group_tests(const UnitTest * const tests, const size_t number_of_tests)
     const ListNode * const check_point = check_point_allocated_blocks();
     const char **failed_names = NULL;
     void **current_state = NULL;
-    TestState group_state = {
-        .check_point = NULL,
-    };
+    TestState group_state = {0};
+    group_state.check_point = NULL;
 
     if (number_of_tests == 0) {
         return -1;
