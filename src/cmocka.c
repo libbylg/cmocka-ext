@@ -3611,3 +3611,53 @@ int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_na
 
     free(tests);
 }
+
+
+
+
+int     _mocka_register_test_group(char* test_group_name, int is_setup, CMFixtureFunction f)
+{
+    struct cmocka_test_group* group = NULL;
+    struct cmocka_list_head* gitem = NULL;
+    cmocka_list_for_each(gitem, (&cmocka_test_groups))
+    {
+        group = (struct cmocka_test_group*)gitem;
+        if (0 == strcmp(group->name, test_group_name))
+        {
+            break;
+        }
+    }
+
+    if (NULL == group)
+    {
+        group = (struct cmocka_test_group*)malloc(sizeof(struct cmocka_test_group));
+        if (NULL == group)
+        {
+            return  -1;
+        }
+
+        cmocka_list_head_init(&(group->node));
+        cmocka_list_head_init(&(group->test_cases));
+        group->name = test_group_name;
+        group->setup = NULL;
+        group->teardown = NULL;
+        group->enable = 1;
+        cmocka_list_add_tail(&cmocka_test_groups, &(group->node));
+    }
+
+
+    if (!is_setup)
+    {
+        group->setup = f;
+    }
+    else
+    {
+        group->teardown = f;
+    }
+
+    return  0;
+}
+
+
+
+

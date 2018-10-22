@@ -2347,11 +2347,29 @@ int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_na
     static void test_case_name(void **state); \
     CMOCKA_INITIALIZER(cmocka_init__##test_case_name) \
     { \
-        cmocka_register_test_case(#test_case_name, #test_group_name, test_case_name __VA_ARGS__) \
+        cmocka_register_test_case(#test_case_name, #test_group_name, test_case_name, __VA_ARGS__) \
     }
 
 #define TEST_RUN(test_group_name_pattern,test_case_name_pattern) \
     ((void)_cmocka_run_test_cases(test_group_name_pattern, test_case_name_pattern))
+
+#define TEST_SETUP(test_group_name) \
+    static int test_group_name(void **state); \
+    CMOCKA_INITIALIZER(cmocka_register_group__##test_group_name)    \
+    {   \
+        _mocka_register_test_group(#test_group_name, 0, test_group_name);  \
+    }   \
+    static int test_group_name(void **state)
+
+
+#define TEST_TEARDOWN(test_group_name) \
+    static int test_group_name(void **state); \
+    CMOCKA_INITIALIZER(cmocka_register_group__##test_group_name)    \
+    {   \
+        _mocka_register_test_group(#test_group_name, 1, test_group_name);  \
+    }   \
+    static int test_group_name(void **state)
+
 
 /** @} */
 
