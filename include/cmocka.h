@@ -2293,6 +2293,69 @@ void cmocka_set_message_output(enum cm_message_output output);
  */
 void cmocka_set_test_filter(const char *pattern);
 
+
+
+/**
+ * 
+ *
+ */
+#ifdef _MSC_VER
+#define CMOCKA_INITIALIZER(f)							\
+	static void f();							\
+	static int __##f##_wrapper(){ f(); return 0; }	\
+	__pragma(data_seg(".CRT$XIU"))				\
+	static int(*__##f##2##__COUNTER__) () = __##f##_wrapper;	\
+	__pragma(data_seg())						\
+	static void f()
+#else
+#define CMOCKA_INITIALIZER(f) \
+	__attribute__((constructor)) static void f()
+#endif
+
+struct cmocka_list_head
+{
+	struct cmocka_list_head*	next;
+	struct cmocka_list_head*	prev;
+};
+
+struct cmocka_test_group
+{
+	struct cmocka_list_head		node;
+	struct cmocka_list_head		test_cases;
+	const char*					name;
+	CMUnitTestFunction			setup;
+	CMFixtureFunction			teardown;
+	int							enable;
+};
+
+struct cmocka_test_case
+{
+	struct cmocka_list_head		node;
+	struct cmocka_test_group*	group;
+	int							enable;
+	struct CMUnitTest			test;
+};
+
+char                    cmocka_disable[1];
+char                    cmocka_end_params[1];
+struct cmocka_list_head cmocka_test_groups;
+
+void    _cmocka_register_test_case(char* test_group_name, char* test_case_name, CMUnitTestFunction test_case_func, ...);
+int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_name_pattern);
+
+#define TEST(test_case_name, test_group_name, ...) \
+    static void test_case_name(void **state); \
+    CMOCKA_INITIALIZER(cmocka_init__##test_case_name) \
+    { \
+        cmocka_register_test_case(#test_case_name, #test_group_name, test_case_name __VA_ARGS__) \
+    }
+
+#define TEST_RUN(test_group_name_pattern,test_case_name_pattern) \
+    ((void)_cmocka_run_test_cases(test_group_name_pattern, test_case_name_pattern))
+
 /** @} */
+
+
+
 
 #endif /* CMOCKA_H_ */

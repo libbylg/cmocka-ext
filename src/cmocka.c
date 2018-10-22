@@ -3426,3 +3426,188 @@ int _run_group_tests(const UnitTest * const tests, const size_t number_of_tests)
 
     return (int)total_failed;
 }
+
+#define cmocka_list_head_init(head) \
+    ((head)->next = (head)->prev = (head))
+
+#define cmocka_list_for_each(item,list) \
+for (item = (list)->next; item != (list); item = item->next)
+
+#define cmocka_list_for_each_safe(item,n,list) \
+for ((item = list->next), (n = item->next); item != list; (item = item->next), (n = item->next))
+
+#define cmocka_list_add_tail(list, item) \
+    (item)->prev = (list)->prev;    \
+    (item)->next = (list); \
+    (list)->prev->next = (item);
+
+
+//  all of the global objects
+char                    cmocka_disable[1]    = {0}; //  The disable object,we use the address of it.
+char                    cmocka_end_params[1] = {0}; //  The flag of the end of the va-args,we use the address of it.
+struct cmocka_list_head cmocka_test_groups   = {0}; //  The global test groups
+
+void _cmocka_register_test_case(char* test_group_name, char* test_case_name, CMUnitTestFunction test_case_func, ...)
+{
+    //  define all of the optional parameters
+    CMFixtureFunction setup_func = NULL;
+    CMFixtureFunction teardown_func = NULL;
+    char* disabled = NULL;
+
+    //  extract the parameter from the va-arg
+    va_list valist;
+    va_start(valist, test_case_func);
+    int index = 0;
+    for (void* p = va_arg(valist, void*); p != cmocka_end_params; p = va_arg(valist, void*))
+    {
+        switch (index)
+        {
+        case 0:
+            setup_func = (CMFixtureFunction)p;
+            break;
+        case 1:
+            teardown_func = (CMFixtureFunction)p;
+            break;
+        case 2:
+            disabled = (char*)p;
+            break;
+        default:
+            //ASSERT(0);
+            break;
+        }
+
+        index++;
+    }
+    va_end(valist);
+
+    //  create and initialize the test case object
+    struct cmocka_test_case* test = (struct cmocka_test_case*)malloc(sizeof(struct cmocka_test_case));
+    if (NULL == test)
+    {
+        return;
+    }
+    test->test.name = test_case_name;
+    test->test.test_func = test_case_func;
+    test->test.setup_func = setup_func;
+    test->test.teardown_func = teardown_func;
+    test->test.initial_state = NULL;
+
+    //  find the exist group
+    struct cmocka_test_group* group = NULL;
+    struct cmocka_list_head* item = NULL;
+    cmocka_list_for_each(item, (&cmocka_test_groups))
+    {
+        struct cmocka_test_group* g = (struct cmocka_test_group*)item;
+        if (0 == strcmp(g->name, test_group_name))
+        {
+            group = g;
+            break;
+        }
+    }
+
+    if (NULL == group)
+    {
+        //  create and initialize the group object
+        group = (struct cmocka_test_group*)malloc(sizeof(struct cmocka_test_group));
+        if (NULL == group)
+        {
+            free(test);
+            return;
+        }
+        cmocka_list_head_init(&(group->node));
+        cmocka_list_head_init(&(group->test_cases));
+        group->name = test_group_name;
+        group->setup = NULL;
+        group->teardown = NULL;
+        group->enable = 1;
+
+        //  add to the global groups list
+        cmocka_list_add_tail((&cmocka_test_groups), &(group->node));
+    }
+
+    //  add the test-case to the test-group object.
+    test->enable = (NULL == disabled);
+    cmocka_list_add_tail(&(group->test_cases), &(test->node));
+
+    return;
+}
+
+
+
+static int  _cmocka_name_match(const char* pattern, const char* s)
+{
+    //  make NULL match any string
+    if (NULL == pattern)
+    {
+        return  1;  //  bool
+    }
+
+    if (0 == strcmp(pattern, s))
+    {
+        return  1;  //  bool
+    }
+
+    return  0;  //  bool
+}
+
+
+int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_name_pattern)
+{
+    int cap = 16;
+    int count = 0;
+    struct CMUnitTest* tests = (struct CMUnitTest*)malloc(sizeof(struct CMUnitTest) * cap);
+    if (NULL == tests)
+    {
+        return  -1;
+    }
+
+    //  collect all of the test cases in any group which match the contidions
+    struct cmocka_list_head* gitem = NULL;
+    struct cmocka_list_head* titem = NULL;
+    cmocka_list_for_each(gitem, (&cmocka_test_groups))
+    {
+        struct cmocka_test_group* group = (struct cmocka_test_group*)gitem;
+        if (!_cmocka_name_match(test_group_name_pattern, group->name))
+        {
+            continue;
+        }
+        
+        count = 0;
+        cmocka_list_for_each(titem, &(group->test_cases))
+        {
+            struct cmocka_test_case* test = (struct cmocka_test_case*)titem;
+            if (!_cmocka_name_match(test_case_name_pattern, group->name))
+            {
+                continue;
+            }
+
+            //  need more memory?
+            if (count >= cap)
+            {
+                int new_cap = 2 * cap;  //  double size
+                struct CMUnitTest* new_tests = (struct CMUnitTest*)malloc(sizeof(struct CMUnitTest) * new_cap);
+                if (NULL == new_tests)
+                {
+                    return  -2;
+                }
+                struct CMUnitTest* old_tests = tests;
+                tests = new_tests;
+                free(old_tests);
+                cap = new_cap;
+            }
+
+            //  append to tail of the array
+            tests[count++] = test->test;
+        }
+
+        if (0 == count)
+        {
+            continue;
+        }
+
+        (void)_cmocka_run_group_tests((test_group_name_pattern ? test_group_name_pattern : ""),
+            tests, count, group->setup, group->teardown);
+    }
+
+    free(tests);
+}

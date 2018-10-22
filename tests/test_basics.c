@@ -127,7 +127,7 @@ TEST(suite1, int_test_success)
     assert_int_equal(*answer, 42);
 }
 #define DISABLED	0
-TEST(test, suite)
+TEST(test)
 TEST(test, suite)
 TEST(test, suite, DISABLED)
 TEST(test, suite, setup, teardown, DISABLED)
@@ -138,10 +138,24 @@ TEARDOWN(suite)
 TEST(test)
 TEST(test, DISABLED)
 TEST(test, setup, teardown, DISABLED)
-SETUP()
-TEARDOWN()
+SETUP(setup)
+TEARDOWN(teardown)
+
+#define DISABLED	0
+TEST(test)
+TEST(test, DISABLED)
+TEST(test, setup, teardown, DISABLED)
+SUITE_SETUP(setup)
+SUITE_TEARDOWN(teardown)
+TEST_SETUP(setup)
+TEST_TEARDOWN(teardown)
 
 
+#define DISABLED	0
+TEST(test, suite)
+TEST_F(test, suite, setup, teardown)
+SETUP(suite)
+TEARDOWN(suite)
 
 // TEST(int_test_success)
 // {
@@ -167,6 +181,6 @@ int main(void) {
 //         cmocka_unit_test_setup_teardown(int_test_success, setup, teardown),
 //     };
 
-    //return cmocka_run_group_tests(tests, NULL, NULL);
+    return cmocka_run_group_tests(tests, NULL, NULL);
 	return TEST_RUN();
 }
