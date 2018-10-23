@@ -3446,8 +3446,9 @@ for ((item = list->next), (n = item->next); item != list; (item = item->next), (
 char                    cmocka_disable[1]    = {0}; //  The disable object,we use the address of it.
 char                    cmocka_end_params[1] = {0}; //  The flag of the end of the va-args,we use the address of it.
 struct cmocka_list_head cmocka_test_groups   = {0}; //  The global test groups
+char                    cmocka_default_group[8] = "default";
 
-void _cmocka_register_test_case(char* test_group_name, char* test_case_name, CMUnitTestFunction test_case_func, ...)
+void _cmocka_register_test_case(char* test_case_name, CMUnitTestFunction test_case_func, char* test_group_name, ...)
 {
     //  define all of the optional parameters
     CMFixtureFunction setup_func = NULL;

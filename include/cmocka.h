@@ -2339,36 +2339,53 @@ struct cmocka_test_case
 char                    cmocka_disable[1];
 char                    cmocka_end_params[1];
 struct cmocka_list_head cmocka_test_groups;
+char                    cmocka_default_group[8];
 
-void    _cmocka_register_test_case(char* test_group_name, char* test_case_name, CMUnitTestFunction test_case_func, ...);
+
+#define TEST_GROUP_DEFAULT  (cmocka_default_group)
+
+#define TEST_DISABLE        (cmocka_disable)
+
+void    _cmocka_register_test_case(char* test_case_name, CMUnitTestFunction test_case_func, char* test_group_name, ...);
 int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_name_pattern);
 
-#define TEST(test_case_name, test_group_name, ...) \
+#define TEST(test_case_name, ...) \
     static void test_case_name(void **state); \
     CMOCKA_INITIALIZER(cmocka_init__##test_case_name) \
     { \
-        cmocka_register_test_case(#test_case_name, #test_group_name, test_case_name, __VA_ARGS__) \
-    }
+        _cmocka_register_test_case(#test_case_name, test_case_name, "default", __VA_ARGS__) \
+    } \
+    static void test_case_name(void **state)
+
+#define TEST_F(test_case_name, test_group_name, ...) \
+    static void test_case_name(void **state); \
+    CMOCKA_INITIALIZER(cmocka_init__##test_case_name) \
+    { \
+        _cmocka_register_test_case(#test_case_name, test_case_name, #test_group_name, __VA_ARGS__) \
+    } \
+    static void test_case_name(void **state)
 
 #define TEST_RUN(test_group_name_pattern,test_case_name_pattern) \
     ((void)_cmocka_run_test_cases(test_group_name_pattern, test_case_name_pattern))
 
-#define TEST_SETUP(test_group_name) \
-    static int test_group_name(void **state); \
-    CMOCKA_INITIALIZER(cmocka_register_group__##test_group_name)    \
+#define TEST_SETUP(test_group_func,test_group_name) \
+    static int test_group_func(void **state); \
+    CMOCKA_INITIALIZER(cmocka_register_group__##test_group_func)    \
     {   \
-        _mocka_register_test_group(#test_group_name, 0, test_group_name);  \
+        _mocka_register_test_group(test_group_name, 0, test_group_func);  \
     }   \
-    static int test_group_name(void **state)
+    static int test_group_func(void **state)
 
 
-#define TEST_TEARDOWN(test_group_name) \
-    static int test_group_name(void **state); \
-    CMOCKA_INITIALIZER(cmocka_register_group__##test_group_name)    \
+#define TEST_TEARDOWN(test_group_func, test_group_name) \
+    static int test_group_func(void **state); \
+    CMOCKA_INITIALIZER(cmocka_register_group__##test_group_func)    \
     {   \
-        _mocka_register_test_group(#test_group_name, 1, test_group_name);  \
+        _mocka_register_test_group(test_group_name, 0, test_group_func);  \
     }   \
-    static int test_group_name(void **state)
+    static int test_group_func(void **state)
+
+#define TEST_CONTEXT()  state
 
 
 /** @} */
