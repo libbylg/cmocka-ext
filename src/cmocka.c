@@ -3443,41 +3443,48 @@ for ((item = list->next), (n = item->next); item != list; (item = item->next), (
 
 
 //  all of the global objects
-char                    cmocka_disable[1]    = {0}; //  The disable object,we use the address of it.
-char                    cmocka_end_params[1] = {0}; //  The flag of the end of the va-args,we use the address of it.
-struct cmocka_list_head cmocka_test_groups   = {0}; //  The global test groups
-char                    cmocka_default_group[8] = "default";
+struct cmocka_list_head cmocka_test_groups   = 
+{
+    &cmocka_test_groups,
+    &cmocka_test_groups,
+}; //  The global test groups
+
 
 void _cmocka_register_test_case(char* test_case_name, CMUnitTestFunction test_case_func, char* test_group_name, ...)
 {
     //  define all of the optional parameters
     CMFixtureFunction setup_func = NULL;
     CMFixtureFunction teardown_func = NULL;
-    char* disabled = NULL;
+    int enable   =  1;
 
     //  extract the parameter from the va-arg
     va_list valist;
-    va_start(valist, test_case_func);
-    int index = 0;
-    for (void* p = va_arg(valist, void*); p != cmocka_end_params; p = va_arg(valist, void*))
+    va_start(valist, test_group_name);
+    for (void* p = va_arg(valist, void*); p != CMOCKA_END_PARAMS; p = va_arg(valist, void*))
     {
-        switch (index)
+        if (p == ENABLE)
         {
-        case 0:
-            setup_func = (CMFixtureFunction)p;
-            break;
-        case 1:
-            teardown_func = (CMFixtureFunction)p;
-            break;
-        case 2:
-            disabled = (char*)p;
-            break;
-        default:
-            //ASSERT(0);
-            break;
+            enable = 1;
+            continue;
         }
 
-        index++;
+        if (p == DISABLE)
+        {
+            enable = 0;
+            continue;
+        }
+
+        if (NULL == setup_func)
+        {
+            setup_func = (CMFixtureFunction)p;
+        }
+        
+        if (NULL == teardown_func)
+        {
+            teardown_func = (CMFixtureFunction)p;
+        }
+
+        //  ignore other parameters
     }
     va_end(valist);
 
@@ -3527,7 +3534,7 @@ void _cmocka_register_test_case(char* test_case_name, CMUnitTestFunction test_ca
     }
 
     //  add the test-case to the test-group object.
-    test->enable = (NULL == disabled);
+    test->enable = enable;
     cmocka_list_add_tail(&(group->test_cases), &(test->node));
 
     return;

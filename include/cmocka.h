@@ -17,6 +17,16 @@
 #ifndef CMOCKA_H_
 #define CMOCKA_H_
 
+
+
+#ifndef     CMOCKA_NOT_INCLUDE_STD_HEADERS
+#include <stdarg.h>
+#include <stddef.h>
+#include <setjmp.h>
+#endif//    CMOCKA_NOT_INCLUDE_STD_HEADERS
+
+
+
 #ifdef _WIN32
 # ifdef _MSC_VER
 
@@ -2336,15 +2346,11 @@ struct cmocka_test_case
 	struct CMUnitTest			test;
 };
 
-char                    cmocka_disable[1];
-char                    cmocka_end_params[1];
-struct cmocka_list_head cmocka_test_groups;
-char                    cmocka_default_group[8];
 
-
-#define TEST_GROUP_DEFAULT  (cmocka_default_group)
-
-#define TEST_DISABLE        (cmocka_disable)
+#define ENABLE              (void*)(0x0001L)
+#define DISABLE             (void*)(0x0002L)
+//  others for future
+#define CMOCKA_END_PARAMS   (void*)(0x0009L)
 
 void    _cmocka_register_test_case(char* test_case_name, CMUnitTestFunction test_case_func, char* test_group_name, ...);
 int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_name_pattern);
@@ -2353,7 +2359,11 @@ int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_na
     static void test_case_name(void **state); \
     CMOCKA_INITIALIZER(cmocka_init__##test_case_name) \
     { \
-        _cmocka_register_test_case(#test_case_name, test_case_name, "default", __VA_ARGS__) \
+        char* tcn = #test_case_name; \
+        CMUnitTestFunction tcf = test_case_name; \
+        char* tgn = "default"; \
+        void* ep = CMOCKA_END_PARAMS; \
+        _cmocka_register_test_case(tcn, tcf, tgn, __VA_ARGS__, ep); \
     } \
     static void test_case_name(void **state)
 
@@ -2361,7 +2371,7 @@ int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_na
     static void test_case_name(void **state); \
     CMOCKA_INITIALIZER(cmocka_init__##test_case_name) \
     { \
-        _cmocka_register_test_case(#test_case_name, test_case_name, #test_group_name, __VA_ARGS__) \
+        _cmocka_register_test_case(#test_case_name, test_case_name, #test_group_name, __VA_ARGS__, CMOCKA_END_PARAMS); \
     } \
     static void test_case_name(void **state)
 
