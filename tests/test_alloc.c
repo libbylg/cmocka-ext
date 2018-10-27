@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static void torture_test_malloc(void **state)
+TEST( torture_test_malloc)
 {
     char *str;
     size_t str_len;
@@ -31,7 +31,7 @@ static void torture_test_malloc(void **state)
     test_free(str);
 }
 
-static void torture_test_realloc(void **state)
+TEST( torture_test_realloc)
 {
     char *str;
     char *tmp;
@@ -64,7 +64,7 @@ static void torture_test_realloc(void **state)
     test_free(str);
 }
 
-static void torture_test_realloc_set0(void **state)
+TEST( torture_test_realloc_set0)
 {
     char *str;
     size_t str_len;
@@ -81,11 +81,5 @@ static void torture_test_realloc_set0(void **state)
 }
 
 int main(void) {
-    const struct CMUnitTest alloc_tests[] = {
-        cmocka_unit_test(torture_test_malloc),
-        cmocka_unit_test(torture_test_realloc),
-        cmocka_unit_test(torture_test_realloc_set0),
-    };
-
-    return cmocka_run_group_tests(alloc_tests, NULL, NULL);
+    return TEST_RUN();
 }

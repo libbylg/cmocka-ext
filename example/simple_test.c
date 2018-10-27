@@ -6,11 +6,5 @@ TEST(null_test_success) {
 }
 
 int main(void) {
-    TEST_RUN("", "");
-    getchar();
-//     const struct CMUnitTest tests[] = {
-//         cmocka_unit_test(null_test_success),
-//     };
-// 
-//     return cmocka_run_group_tests(tests, NULL, NULL);
+    return TEST_RUN();
 }

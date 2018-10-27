@@ -2333,7 +2333,7 @@ struct cmocka_test_group
 	struct cmocka_list_head		node;
 	struct cmocka_list_head		test_cases;
 	const char*					name;
-	CMUnitTestFunction			setup;
+	CMFixtureFunction			setup;
 	CMFixtureFunction			teardown;
 	int							enable;
 };
@@ -2355,17 +2355,12 @@ struct cmocka_test_case
 void    _cmocka_register_test_case(char* test_case_name, CMUnitTestFunction test_case_func, char* test_group_name, ...);
 int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_name_pattern);
 
-#define TEST(test_case_name, ...) \
-    static void test_case_name(void **state); \
-    CMOCKA_INITIALIZER(cmocka_init__##test_case_name) \
-    { \
-        char* tcn = #test_case_name; \
-        CMUnitTestFunction tcf = test_case_name; \
-        char* tgn = "default"; \
-        void* ep = CMOCKA_END_PARAMS; \
-        _cmocka_register_test_case(tcn, tcf, tgn, __VA_ARGS__, ep); \
-    } \
-    static void test_case_name(void **state)
+
+
+
+
+
+
 
 #define TEST_F(test_case_name, test_group_name, ...) \
     static void test_case_name(void **state); \
@@ -2375,10 +2370,21 @@ int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_na
     } \
     static void test_case_name(void **state)
 
-#define TEST_RUN(test_group_name_pattern,test_case_name_pattern) \
-    ((void)_cmocka_run_test_cases(test_group_name_pattern, test_case_name_pattern))
 
-#define TEST_SETUP(test_group_func,test_group_name) \
+
+
+#define TEST_SETUP_F(test_group_func,test_group_name) \
+    static int test_group_func(void **state); \
+    CMOCKA_INITIALIZER(cmocka_register_group__##test_group_func)    \
+    {   \
+        _mocka_register_test_group(test_group_name, 1, test_group_func);  \
+    }   \
+    static int test_group_func(void **state)
+
+
+
+
+#define TEST_TEARDOWN_F(test_group_func, test_group_name) \
     static int test_group_func(void **state); \
     CMOCKA_INITIALIZER(cmocka_register_group__##test_group_func)    \
     {   \
@@ -2387,15 +2393,23 @@ int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_na
     static int test_group_func(void **state)
 
 
-#define TEST_TEARDOWN(test_group_func, test_group_name) \
-    static int test_group_func(void **state); \
-    CMOCKA_INITIALIZER(cmocka_register_group__##test_group_func)    \
-    {   \
-        _mocka_register_test_group(test_group_name, 0, test_group_func);  \
-    }   \
-    static int test_group_func(void **state)
+
 
 #define TEST_CONTEXT()  state
+
+
+
+
+#define TEST_RUN_F(test_group_name_pattern,test_case_name_pattern) \
+    (_cmocka_run_test_cases(test_group_name_pattern, test_case_name_pattern))
+
+
+
+
+#define TEST(test_case_name, ...)       TEST_F(test_case_name, __FILE__)
+#define TEST_SETUP(test_group_func)     TEST_SETUP_F(test_group_func, __FILE__)
+#define TEST_TEARDOWN(test_group_func)  TEST_TEARDOWN_F(test_group_func, __FILE__)
+#define TEST_RUN()                      TEST_RUN_F(__FILE__, "*")
 
 
 /** @} */

@@ -3575,7 +3575,7 @@ int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_na
     cmocka_list_for_each(gitem, (&cmocka_test_groups))
     {
         struct cmocka_test_group* group = (struct cmocka_test_group*)gitem;
-        if (!_cmocka_name_match(test_group_name_pattern, group->name))
+        if (!c_strmatch(group->name, test_group_name_pattern))
         {
             continue;
         }
@@ -3584,7 +3584,7 @@ int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_na
         cmocka_list_for_each(titem, &(group->test_cases))
         {
             struct cmocka_test_case* test = (struct cmocka_test_case*)titem;
-            if (!_cmocka_name_match(test_case_name_pattern, group->name))
+            if (!c_strmatch(group->name, test_case_name_pattern))
             {
                 continue;
             }

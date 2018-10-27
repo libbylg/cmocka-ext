@@ -20,7 +20,7 @@
 /**************************************
  *** assert_return_code
  **************************************/
-static void test_assert_return_code_fail(void **state)
+TEST(test_assert_return_code_fail)
 {
     int fd;
 
@@ -35,9 +35,5 @@ static void test_assert_return_code_fail(void **state)
 }
 
 int main(void) {
-    const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_assert_return_code_fail),
-    };
-
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return TEST_RUN();
 }

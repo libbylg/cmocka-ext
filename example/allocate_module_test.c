@@ -30,24 +30,19 @@ TEST(leak_memory_test) {
 }
 
 /* Test case that fails as buffer_overflow() corrupts an allocated block. */
-static void buffer_overflow_test(void **state) {
+TEST(buffer_overflow_test) {
     (void) state; /* unused */
 
     buffer_overflow();
 }
 
 /* Test case that fails as buffer_underflow() corrupts an allocated block. */
-static void buffer_underflow_test(void **state) {
+TEST(buffer_underflow_test){
     (void) state; /* unused */
 
     buffer_underflow();
 }
 
 int main(void) {
-    const struct CMUnitTest tests[] = {
-        cmocka_unit_test(leak_memory_test),
-        cmocka_unit_test(buffer_overflow_test),
-        cmocka_unit_test(buffer_underflow_test),
-    };
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return TEST_RUN();
 }
