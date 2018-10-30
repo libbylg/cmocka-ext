@@ -19,21 +19,21 @@
 #include <setjmp.h>
 #include <cmocka.h>
 
-static void test_ok1(void **state)
+TEST(test_ok1)
 {
     (void)state;
 
     assert_true(1);
 }
 
-static void test_ok2(void **state)
+TEST(test_ok2)
 {
     (void)state;
 
     assert_true(1);
 }
 
-static void test_fail(void **state)
+TEST(test_fail)
 {
     (void)state;
 
@@ -41,13 +41,5 @@ static void test_fail(void **state)
 }
 
 int main(void) {
-    const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_ok1),
-        cmocka_unit_test(test_ok2),
-        cmocka_unit_test(test_fail),
-    };
-
-    cmocka_set_test_filter("test_ok*");
-
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return TEST_RUN_F("*", "test_ok*");
 }

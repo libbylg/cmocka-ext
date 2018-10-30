@@ -12,10 +12,13 @@ static int setup_fail(void **state) {
     return -1;
 }
 
-static void int_test_ignored(void **state) {
-    /* should not be called */
-    assert_non_null(*state);
+
+static int teardown(void **state) {
+    free(*state);
+
+    return 0;
 }
+
 
 static int setup_ok(void **state) {
     int *answer;
@@ -31,24 +34,19 @@ static int setup_ok(void **state) {
     return 0;
 }
 
+
+TEST(int_test_ignored, setup_fail, teardown) {
+    /* should not be called */
+    assert_non_null(*state);
+}
+
 /* A test case that does check if an int is equal. */
-static void int_test_success(void **state) {
+TEST(int_test_success, setup_ok, teardown) {
     int *answer = *state;
 
     assert_int_equal(*answer, 42);
 }
 
-static int teardown(void **state) {
-    free(*state);
-
-    return 0;
-}
-
 int main(void) {
-    const struct CMUnitTest tests[] = {
-        cmocka_unit_test_setup_teardown(int_test_ignored, setup_fail, teardown),
-        cmocka_unit_test_setup_teardown(int_test_success, setup_ok, teardown),
-    };
-
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return TEST_RUN();
 }

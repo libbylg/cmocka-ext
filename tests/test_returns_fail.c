@@ -25,14 +25,14 @@ void mock_function_call_times(size_t times, int expectedValue)
     }
 }
 
-static void test_will_return_fails_for_no_calls(void **state)
+TEST(test_will_return_fails_for_no_calls)
 {
     (void) state;
 
     will_return(mock_function, 32);
 }
 
-static void test_will_return_count_fails_for_unreturned_items(void **state)
+TEST(test_will_return_count_fails_for_unreturned_items)
 {
     int value;
     size_t numberOfCalls;
@@ -46,7 +46,7 @@ static void test_will_return_count_fails_for_unreturned_items(void **state)
     mock_function_call_times(numberOfCalls - 1u, value);
 }
 
-static void test_will_return_always_fails_for_no_calls(void **state)
+TEST(test_will_return_always_fails_for_no_calls)
 {
     int value;
 
@@ -57,21 +57,12 @@ static void test_will_return_always_fails_for_no_calls(void **state)
     will_return_always(mock_function, value);
 }
 
-static int teardown(void **state) {
+TEST_TEARDOWN(teardown) {
     free(*state);
 
     return 0;
 }
 
 int main(int argc, char **argv) {
-    const struct CMUnitTest alloc_tests[] = {
-        cmocka_unit_test_teardown(test_will_return_fails_for_no_calls, teardown)
-        ,cmocka_unit_test_teardown(test_will_return_count_fails_for_unreturned_items, teardown)
-        ,cmocka_unit_test_teardown(test_will_return_always_fails_for_no_calls, teardown)
-    };
-
-    (void)argc;
-    (void)argv;
-
-    return cmocka_run_group_tests(alloc_tests, NULL, NULL);
+    return TEST_RUN();
 }

@@ -3584,7 +3584,7 @@ int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_na
         cmocka_list_for_each(titem, &(group->test_cases))
         {
             struct cmocka_test_case* test = (struct cmocka_test_case*)titem;
-            if (!c_strmatch(group->name, test_case_name_pattern))
+            if (!c_strmatch(test->test.name, test_case_name_pattern))
             {
                 continue;
             }

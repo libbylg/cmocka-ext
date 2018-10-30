@@ -5,33 +5,33 @@
 
 #include <stdlib.h>
 
-static int setup_only(void **state)
+TEST_SETUP(setup_only)
 {
     *state = malloc(1);
 
     return 0;
 }
 
-static int teardown_only(void **state)
+TEST_TEARDOWN(teardown_only)
 {
     free(*state);
 
     return 0;
 }
 
-static void malloc_setup_test(void **state)
+TEST(malloc_setup_test)
 {
     assert_non_null(*state);
     free(*state);
 }
 
-static void malloc_teardown_test(void **state)
+TEST(malloc_teardown_test)
 {
     *state = malloc(1);
     assert_non_null(*state);
 }
 
-static int prestate_setup(void **state)
+TEST_SETUP(prestate_setup)
 {
     int *val = (int *)*state, *a;
 
@@ -42,14 +42,14 @@ static int prestate_setup(void **state)
     return 0;
 }
 
-static int prestate_teardown(void **state)
+TEST(prestate_teardown)
 {
 	free(*state);
 
 	return 0;
 }
 
-static void prestate_setup_test(void **state)
+TEST(prestate_setup_test)
 {
     int *a = (int *)*state;
 
@@ -57,7 +57,7 @@ static void prestate_setup_test(void **state)
     assert_int_equal(*a, 43);
 }
 
-static void prestate_test(void **state)
+TEST(prestate_test)
 {
     int *a = (int *)*state;
 

@@ -6,7 +6,7 @@
 #include <setjmp.h>
 #include <cmocka.h>
 
-static int group_setup(void **state)
+TEST_SETUP(group_setup)
 {
     int *answer = malloc(sizeof(int));
     assert_non_null(answer);
@@ -16,7 +16,7 @@ static int group_setup(void **state)
     return 0;
 }
 
-static int group_teardown(void **state)
+TEST_TEARDOWN(group_teardown)
 {
     int *answer = (int *)*state;
 
@@ -24,14 +24,14 @@ static int group_teardown(void **state)
     return 0;
 }
 
-static void test_value_equal(void **state)
+TEST(test_value_equal)
 {
     int a = *((int *)*state);
 
     assert_int_equal(a, 42);
 }
 
-static void test_value_range(void **state)
+TEST(test_value_range)
 {
     int a = *((int *)*state);
 

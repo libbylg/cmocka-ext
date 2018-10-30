@@ -23,7 +23,7 @@
 
 #include "../src/cmocka.c"
 
-static void test_strmatch_null(void **state)
+TEST(test_strmatch_null)
 {
     int rc;
 
@@ -39,7 +39,7 @@ static void test_strmatch_null(void **state)
     assert_int_equal(rc, 0);
 }
 
-static void test_strmatch_empty(void **state)
+TEST(test_strmatch_empty)
 {
     int rc;
 
@@ -55,7 +55,7 @@ static void test_strmatch_empty(void **state)
     assert_int_equal(rc, 0);
 }
 
-static void test_strmatch_single(void **state)
+TEST(test_strmatch_single)
 {
     int rc;
 
@@ -71,7 +71,7 @@ static void test_strmatch_single(void **state)
     assert_int_equal(rc, 0);
 }
 
-static void test_strmatch_wildcard(void **state)
+TEST(test_strmatch_wildcard)
 {
     int rc;
 
@@ -88,12 +88,5 @@ static void test_strmatch_wildcard(void **state)
 }
 
 int main(void) {
-    const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_strmatch_null),
-        cmocka_unit_test(test_strmatch_empty),
-        cmocka_unit_test(test_strmatch_single),
-        cmocka_unit_test(test_strmatch_wildcard),
-    };
-
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return TEST_RUN();
 }

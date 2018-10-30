@@ -22,7 +22,7 @@ static void mock_test_c_called(void)
 }
 
 
-static void test_does_succeed_for_expected(void **state)
+TEST(test_does_succeed_for_expected)
 {
     (void)state;
     expect_function_call(mock_test_a_called);
@@ -32,7 +32,7 @@ static void test_does_succeed_for_expected(void **state)
     mock_test_a_called();
 }
 
-static void test_does_succeed_for_multiple_calls(void **state)
+TEST(test_does_succeed_for_multiple_calls)
 {
     (void)state;
     expect_function_call(mock_test_a_called);
@@ -45,7 +45,7 @@ static void test_does_succeed_for_multiple_calls(void **state)
     mock_test_a_called();
 }
 
-static void test_ordering_does_ignore_calls(void **state)
+TEST(test_ordering_does_ignore_calls)
 {
     (void)state;
 
@@ -56,13 +56,13 @@ static void test_ordering_does_ignore_calls(void **state)
     mock_test_a_called();
 }
 
-static void test_ordering_does_ignore_no_calls(void **state)
+TEST(test_ordering_does_ignore_no_calls)
 {
     (void)state;
     ignore_function_calls(mock_test_a_called);
 }
 
-static void test_ordering_does_expect_at_least_one_call(void **state)
+TEST(test_ordering_does_expect_at_least_one_call)
 {
     (void)state;
     expect_function_call_any(mock_test_a_called);
@@ -72,7 +72,7 @@ static void test_ordering_does_expect_at_least_one_call(void **state)
     mock_test_a_called();
 }
 
-static void test_ordering_does_work_across_different_functions(void **state)
+TEST(test_ordering_does_work_across_different_functions)
 {
     (void)state;
     expect_function_call(mock_test_a_called);
@@ -84,7 +84,7 @@ static void test_ordering_does_work_across_different_functions(void **state)
     mock_test_a_called();
 }
 
-static void test_ordering_ignores_out_of_order_properly(void **state)
+TEST(test_ordering_ignores_out_of_order_properly)
 {
     (void)state;
     ignore_function_calls(mock_test_a_called);
@@ -98,15 +98,15 @@ static void test_ordering_ignores_out_of_order_properly(void **state)
 }
 
 int main(void) {
-    const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_does_succeed_for_expected)
-        ,cmocka_unit_test(test_does_succeed_for_multiple_calls)
-        ,cmocka_unit_test(test_ordering_does_ignore_no_calls)
-        ,cmocka_unit_test(test_ordering_does_ignore_calls)
-        ,cmocka_unit_test(test_ordering_does_expect_at_least_one_call)
-        ,cmocka_unit_test(test_ordering_does_work_across_different_functions)
-        ,cmocka_unit_test(test_ordering_ignores_out_of_order_properly)
-    };
-
-    return cmocka_run_group_tests(tests, NULL, NULL);
+//     const struct CMUnitTest tests[] = {
+//         cmocka_unit_test(test_does_succeed_for_expected)
+//         , cmocka_unit_test(test_does_succeed_for_multiple_calls)
+//         , cmocka_unit_test(test_ordering_does_ignore_no_calls)
+//         , cmocka_unit_test(test_ordering_does_ignore_calls)
+//         , cmocka_unit_test(test_ordering_does_expect_at_least_one_call)
+//         , cmocka_unit_test(test_ordering_does_work_across_different_functions)
+//         , cmocka_unit_test(test_ordering_ignores_out_of_order_properly)
+//     };
+// 
+    return TEST_RUN();
 }

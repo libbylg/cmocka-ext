@@ -20,7 +20,7 @@
 #include <cmocka.h>
 
 /* A test case that does check if an int is equal. */
-static void test_check_skip(void **state) {
+TEST(test_check_skip) {
     (void)state; /* unused */
 
     skip();
@@ -30,10 +30,6 @@ static void test_check_skip(void **state) {
 
 
 int main(void) {
-    const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_check_skip),
-    };
-
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    return TEST_RUN();
 }
 

@@ -25,14 +25,14 @@ void mock_function_call_times(size_t times, int expectedValue)
     }
 }
 
-static void test_will_return_maybe_for_no_calls(void **state)
+TEST(test_will_return_maybe_for_no_calls)
 {
     (void) state;
 
     will_return_maybe(mock_function, 32);
 }
 
-static void test_will_return_maybe_for_one_mock_call(void **state)
+TEST(test_will_return_maybe_for_one_mock_call)
 {
     int value;
 
@@ -43,7 +43,7 @@ static void test_will_return_maybe_for_one_mock_call(void **state)
     mock_function_call_times(1u, value);
 }
 
-static void test_will_return_maybe_for_more_than_one_call(void **state)
+TEST(test_will_return_maybe_for_more_than_one_call)
 {
     int value;
     size_t numberOfCalls;
@@ -56,14 +56,5 @@ static void test_will_return_maybe_for_more_than_one_call(void **state)
 }
 
 int main(int argc, char **argv) {
-    const struct CMUnitTest alloc_tests[] = {
-        cmocka_unit_test(test_will_return_maybe_for_no_calls)
-        ,cmocka_unit_test(test_will_return_maybe_for_one_mock_call)
-        ,cmocka_unit_test(test_will_return_maybe_for_more_than_one_call)
-    };
-
-    (void)argc;
-    (void)argv;
-
-    return cmocka_run_group_tests(alloc_tests, NULL, NULL);
+    return TEST_RUN();
 }

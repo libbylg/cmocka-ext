@@ -40,12 +40,12 @@ static int teardown(void **state) {
 }
 
 /* A test case that does nothing and succeeds. */
-static void null_test_success(void **state) {
+TEST_F(null_test_success, "test_group1") {
     (void) state;
 }
 
 /* A test case that does check if an int is equal. */
-static void int_test_success(void **state) {
+TEST_F(int_test_success, "test_group2", setup, teardown) {
     int *answer = *state;
 
     assert_int_equal(*answer, 42);
@@ -53,17 +53,9 @@ static void int_test_success(void **state) {
 
 
 int main(void) {
-    const struct CMUnitTest test_group1[] = {
-        cmocka_unit_test(null_test_success),
-    };
-
-    const struct CMUnitTest test_group2[] = {
-        cmocka_unit_test_setup_teardown(int_test_success, setup, teardown),
-    };
-
     int result = 0;
-    result += cmocka_run_group_tests(test_group1, NULL, NULL);
-    result += cmocka_run_group_tests(test_group2, NULL, NULL);
+    result += TEST_RUN("test_group1", "*");
+    result += TEST_RUN("test_group2", "*");
 
     return result;
 }
