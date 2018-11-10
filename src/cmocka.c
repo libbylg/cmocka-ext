@@ -3434,12 +3434,13 @@ int _run_group_tests(const UnitTest * const tests, const size_t number_of_tests)
 for (item = (list)->next; item != (list); item = item->next)
 
 #define cmocka_list_for_each_safe(item,n,list) \
-for ((item = list->next), (n = item->next); item != list; (item = item->next), (n = item->next))
+for ((item = (list)->next), (n = item->next); item != (list); (item = item->next), (n = item->next))
 
 #define cmocka_list_add_tail(list, item) \
     (item)->prev = (list)->prev;    \
     (item)->next = (list); \
-    (list)->prev->next = (item);
+    (list)->prev->next = (item); \
+    (list)->prev = (item);
 
 
 //  all of the global objects
@@ -3618,6 +3619,8 @@ int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_na
     }
 
     free(tests);
+
+    return 0;
 }
 
 

@@ -2366,7 +2366,7 @@ int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_na
     static void test_case_name(void **state); \
     CMOCKA_INITIALIZER(cmocka_init__##test_case_name) \
     { \
-        _cmocka_register_test_case(#test_case_name, test_case_name, #test_group_name, __VA_ARGS__, CMOCKA_END_PARAMS); \
+        _cmocka_register_test_case(#test_case_name, test_case_name, test_group_name, __VA_ARGS__, CMOCKA_END_PARAMS); \
     } \
     static void test_case_name(void **state)
 
