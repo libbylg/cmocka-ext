@@ -1069,7 +1069,7 @@ void check_expected_ptr(#parameter);
  */
 void assert_true(scalar expression);
 #else
-#define assert_true(c) _assert_true(cast_to_largest_integral_type(c), #c, \
+#define assert_true(c, ...) _assert_true(cast_to_largest_integral_type(c), #c, \
                                     __FILE__, __LINE__)
 #endif
 
@@ -1087,7 +1087,7 @@ void assert_true(scalar expression);
  */
 void assert_false(scalar expression);
 #else
-#define assert_false(c) _assert_true(!(cast_to_largest_integral_type(c)), #c, \
+#define assert_false(c, ...) _assert_true(!(cast_to_largest_integral_type(c)), #c, \
                                      __FILE__, __LINE__)
 #endif
 
@@ -1126,8 +1126,9 @@ void assert_return_code(int rc, int error);
  */
 void assert_non_null(void *pointer);
 #else
-#define assert_non_null(c) _assert_true(cast_ptr_to_largest_integral_type(c), #c, \
+#define assert_non_null(c, ...) _assert_true(cast_ptr_to_largest_integral_type(c), #c, \
                                         __FILE__, __LINE__)
+#define assert_not_null assert_non_null 
 #endif
 
 #ifdef DOXYGEN
@@ -1143,7 +1144,7 @@ void assert_non_null(void *pointer);
  */
 void assert_null(void *pointer);
 #else
-#define assert_null(c) _assert_true(!(cast_ptr_to_largest_integral_type(c)), #c, \
+#define assert_null(c, ...) _assert_true(!(cast_ptr_to_largest_integral_type(c)), #c, \
 __FILE__, __LINE__)
 #endif
 
@@ -1160,7 +1161,7 @@ __FILE__, __LINE__)
  */
 void assert_ptr_equal(void *a, void *b);
 #else
-#define assert_ptr_equal(a, b) \
+#define assert_ptr_equal(a, b, ...) \
     _assert_int_equal(cast_ptr_to_largest_integral_type(a), \
                       cast_ptr_to_largest_integral_type(b), \
                       __FILE__, __LINE__)
@@ -1179,7 +1180,7 @@ void assert_ptr_equal(void *a, void *b);
  */
 void assert_ptr_not_equal(void *a, void *b);
 #else
-#define assert_ptr_not_equal(a, b) \
+#define assert_ptr_not_equal(a, b, ...) \
     _assert_int_not_equal(cast_ptr_to_largest_integral_type(a), \
                           cast_ptr_to_largest_integral_type(b), \
                           __FILE__, __LINE__)
@@ -1198,7 +1199,7 @@ void assert_ptr_not_equal(void *a, void *b);
  */
 void assert_int_equal(int a, int b);
 #else
-#define assert_int_equal(a, b) \
+#define assert_int_equal(a, b, ...) \
     _assert_int_equal(cast_to_largest_integral_type(a), \
                       cast_to_largest_integral_type(b), \
                       __FILE__, __LINE__)
@@ -1219,7 +1220,7 @@ void assert_int_equal(int a, int b);
  */
 void assert_int_not_equal(int a, int b);
 #else
-#define assert_int_not_equal(a, b) \
+#define assert_int_not_equal(a, b, ...) \
     _assert_int_not_equal(cast_to_largest_integral_type(a), \
                           cast_to_largest_integral_type(b), \
                           __FILE__, __LINE__)
@@ -1238,7 +1239,7 @@ void assert_int_not_equal(int a, int b);
  */
 void assert_string_equal(const char *a, const char *b);
 #else
-#define assert_string_equal(a, b) \
+#define assert_string_equal(a, b, ...) \
     _assert_string_equal((const char*)(a), (const char*)(b), __FILE__, \
                          __LINE__)
 #endif
@@ -1256,7 +1257,7 @@ void assert_string_equal(const char *a, const char *b);
  */
 void assert_string_not_equal(const char *a, const char *b);
 #else
-#define assert_string_not_equal(a, b) \
+#define assert_string_not_equal(a, b, ...) \
     _assert_string_not_equal((const char*)(a), (const char*)(b), __FILE__, \
                              __LINE__)
 #endif
@@ -1278,7 +1279,7 @@ void assert_string_not_equal(const char *a, const char *b);
  */
 void assert_memory_equal(const void *a, const void *b, size_t size);
 #else
-#define assert_memory_equal(a, b, size) \
+#define assert_memory_equal(a, b, size, ...) \
     _assert_memory_equal((const void*)(a), (const void*)(b), size, __FILE__, \
                          __LINE__)
 #endif
@@ -1300,7 +1301,7 @@ void assert_memory_equal(const void *a, const void *b, size_t size);
  */
 void assert_memory_not_equal(const void *a, const void *b, size_t size);
 #else
-#define assert_memory_not_equal(a, b, size) \
+#define assert_memory_not_equal(a, b, size, ...) \
     _assert_memory_not_equal((const void*)(a), (const void*)(b), size, \
                              __FILE__, __LINE__)
 #endif
@@ -1321,7 +1322,7 @@ void assert_memory_not_equal(const void *a, const void *b, size_t size);
  */
 void assert_in_range(LargestIntegralType value, LargestIntegralType minimum, LargestIntegralType maximum);
 #else
-#define assert_in_range(value, minimum, maximum) \
+#define assert_in_range(value, minimum, maximum, ...) \
     _assert_in_range( \
         cast_to_largest_integral_type(value), \
         cast_to_largest_integral_type(minimum), \
@@ -1344,7 +1345,7 @@ void assert_in_range(LargestIntegralType value, LargestIntegralType minimum, Lar
  */
 void assert_not_in_range(LargestIntegralType value, LargestIntegralType minimum, LargestIntegralType maximum);
 #else
-#define assert_not_in_range(value, minimum, maximum) \
+#define assert_not_in_range(value, minimum, maximum, ...) \
     _assert_not_in_range( \
         cast_to_largest_integral_type(value), \
         cast_to_largest_integral_type(minimum), \
@@ -1366,7 +1367,7 @@ void assert_not_in_range(LargestIntegralType value, LargestIntegralType minimum,
  */
 void assert_in_set(LargestIntegralType value, LargestIntegralType values[], size_t count);
 #else
-#define assert_in_set(value, values, number_of_values) \
+#define assert_in_set(value, values, number_of_values, ...) \
     _assert_in_set(value, values, number_of_values, __FILE__, __LINE__)
 #endif
 
@@ -1385,7 +1386,7 @@ void assert_in_set(LargestIntegralType value, LargestIntegralType values[], size
  */
 void assert_not_in_set(LargestIntegralType value, LargestIntegralType values[], size_t count);
 #else
-#define assert_not_in_set(value, values, number_of_values) \
+#define assert_not_in_set(value, values, number_of_values, ...) \
     _assert_not_in_set(value, values, number_of_values, __FILE__, __LINE__)
 #endif
 
@@ -1474,7 +1475,7 @@ void function_called(void);
  */
 void expect_function_calls(#function, const int times);
 #else
-#define expect_function_calls(function, times) \
+#define expect_function_calls(function, times, ...) \
     _expect_function_call(#function, __FILE__, __LINE__, times)
 #endif
 
@@ -1489,7 +1490,7 @@ void expect_function_calls(#function, const int times);
  */
 void expect_function_call(#function);
 #else
-#define expect_function_call(function) \
+#define expect_function_call(function, ...) \
     _expect_function_call(#function, __FILE__, __LINE__, 1)
 #endif
 
@@ -1517,7 +1518,7 @@ void expect_function_call_any(#function);
  */
 void ignore_function_calls(#function);
 #else
-#define ignore_function_calls(function) \
+#define ignore_function_calls(function, ...) \
     _expect_function_call(#function, __FILE__, __LINE__, -2)
 #endif
 
@@ -1555,7 +1556,7 @@ void ignore_function_calls(#function);
  */
 void fail(void);
 #else
-#define fail() _fail(__FILE__, __LINE__)
+#define fail(...) _fail(__FILE__, __LINE__)
 #endif
 
 #ifdef DOXYGEN
@@ -1564,7 +1565,7 @@ void fail(void);
  */
 void skip(void);
 #else
-#define skip() _skip(__FILE__, __LINE__)
+#define skip(...) _skip(__FILE__, __LINE__)
 #endif
 
 #ifdef DOXYGEN
@@ -2409,7 +2410,8 @@ int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_na
 
 
 
-#define TEST_CONTEXT()  state
+#define TEST_CONTEXT(type)      ((type)*state)
+#define TEST_CONTEXT_SET(ctx)   (*state = (void*)(ctx))
 
 
 
