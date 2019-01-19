@@ -3626,7 +3626,7 @@ int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_na
 
 
 
-int     _mocka_register_test_group(char* test_group_name, int is_setup, CMFixtureFunction f)
+int     _cmocka_register_test_group(char* test_group_name, int is_setup, CMFixtureFunction f)
 {
     struct cmocka_test_group* group = NULL;
     struct cmocka_list_head* gitem = NULL;
@@ -3657,7 +3657,7 @@ int     _mocka_register_test_group(char* test_group_name, int is_setup, CMFixtur
     }
 
 
-    if (!is_setup)
+    if (is_setup)
     {
         group->setup = f;
     }

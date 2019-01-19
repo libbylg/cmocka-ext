@@ -30,7 +30,7 @@ TEST(int_test_successyy)
 	assert_int_equal(*answer, 42);
 }
 
-TEST_SETUP(setup, "") {
+TEST_SETUP(setup) {
     int *answer = malloc(sizeof(int));
 
     assert_non_null(answer);
@@ -41,7 +41,7 @@ TEST_SETUP(setup, "") {
     return 0;
 }
 
-TEST_TEARDOWN(teardown, "") {
+TEST_TEARDOWN(teardown) {
     free(*state);
 
     return 0;

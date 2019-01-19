@@ -50,5 +50,5 @@ EXPORTS
     vprint_error
     vprint_message
     _cmocka_register_test_case
+    _cmocka_register_test_group
     _cmocka_run_test_cases
-    _mocka_register_test_group

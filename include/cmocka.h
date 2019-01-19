@@ -2353,15 +2353,22 @@ struct cmocka_test_case
 #define CMOCKA_END_PARAMS   (void*)(0x0009L)
 
 void    _cmocka_register_test_case(char* test_case_name, CMUnitTestFunction test_case_func, char* test_group_name, ...);
+int     _cmocka_register_test_group(char* test_group_name, int is_setup, CMFixtureFunction f);
 int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_name_pattern);
 
 
 
 
 
-
-
-
+//  TEST_F is defined a new test case.
+//  
+//  TEST_F(<test_case_name>, <test_group_name>, [ENABLE|DISABLE|<setup_func>|<teardoen_func>])
+//
+//  @param <test_case_name> is the name of test function.
+//  @param <test_group_name> is the name of test group. It should be a string.
+//  @param ENABLE or DISABLE is used to make the test case enbaled or disabled.
+//  @param <setup_func> and <teardoen_func> is used to special the setup and the tearadown function, 
+//      but setup function should be at the front of the teardown function.
 #define TEST_F(test_case_name, test_group_name, ...) \
     static void test_case_name(void **state); \
     CMOCKA_INITIALIZER(cmocka_init__##test_case_name) \
@@ -2371,24 +2378,31 @@ int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_na
     static void test_case_name(void **state)
 
 
-
-
+//  TEST_SETUP_F is used to define a setup function for the special test group.
+//
+//  TEST_SETUP_F(<test_group_func>,<test_group_name>) 
+//  @param <test_group_func> is the name of the setup function.
+//  @param <test_group_name> is special the group name of the setup function.
 #define TEST_SETUP_F(test_group_func,test_group_name) \
     static int test_group_func(void **state); \
     CMOCKA_INITIALIZER(cmocka_register_group__##test_group_func)    \
     {   \
-        _mocka_register_test_group(test_group_name, 1, test_group_func);  \
+        _cmocka_register_test_group(test_group_name, 1, test_group_func);  \
     }   \
     static int test_group_func(void **state)
 
 
 
-
+//  TEST_TEARDOWN_F is used to define a teardown function for the special test group.
+//
+//  TEST_TEARDOWN_F(<test_group_func>,<test_group_name>) 
+//  @param <test_group_func> is the name of the teardown function.
+//  @param <test_group_name> is special the group name of the teardown function.
 #define TEST_TEARDOWN_F(test_group_func, test_group_name) \
     static int test_group_func(void **state); \
     CMOCKA_INITIALIZER(cmocka_register_group__##test_group_func)    \
     {   \
-        _mocka_register_test_group(test_group_name, 0, test_group_func);  \
+        _cmocka_register_test_group(test_group_name, 0, test_group_func);  \
     }   \
     static int test_group_func(void **state)
 
@@ -2399,14 +2413,14 @@ int     _cmocka_run_test_cases(char* test_group_name_pattern, char* test_case_na
 
 
 
-
+//  TEST_RUN_F(test_group_name_pattern,test_case_name_pattern)
 #define TEST_RUN_F(test_group_name_pattern,test_case_name_pattern) \
     (_cmocka_run_test_cases(test_group_name_pattern, test_case_name_pattern))
 
 
 
 
-#define TEST(test_case_name, ...)       TEST_F(test_case_name, __FILE__)
+#define TEST(test_case_name, ...)       TEST_F(test_case_name, __FILE__, __VA_ARGS__)
 #define TEST_SETUP(test_group_func)     TEST_SETUP_F(test_group_func, __FILE__)
 #define TEST_TEARDOWN(test_group_func)  TEST_TEARDOWN_F(test_group_func, __FILE__)
 #define TEST_RUN()                      TEST_RUN_F(__FILE__, "*")
